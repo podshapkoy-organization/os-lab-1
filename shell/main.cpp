@@ -10,7 +10,7 @@ void commands(const std::string &command) {
     if (command.substr(0, 3) == "cd ") {
         std::string path = command.substr(3);
         if (chdir(path.c_str()) != 0) {
-            std::cout << "cd: " << path << ": No such file or directory\n";
+            std::cout << "cd: " << path << ": No such file on directory\n";
         }
         return;
     }
@@ -19,6 +19,9 @@ void commands(const std::string &command) {
     try {
         bp::child c(command, bp::std_out > stdout, bp::std_err > stderr);
         c.wait();
+        if (c.exit_code() != 0) {
+            std::cout << "Unable to find application named " << command.substr(8) << "\n";
+        }
     } catch (const bp::process_error &e) {
         std::cout << command << ": command not found\n";
     }
